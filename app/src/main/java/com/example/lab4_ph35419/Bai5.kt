@@ -49,7 +49,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
-data class PaymentMethod(val name: String, val iconResId: Int, val color: Color)
+data class PaymentMethod(
+    val name: String, val iconResId: Int, val color: Color
+)
+
 sealed class Screen(val route: String, val icon: Int, val title: String) {
     object Home : Screen("home", R.drawable.ic_home, "Trang chủ")
     object History : Screen("history", R.drawable.ic_history, "Lịch sử")
@@ -62,8 +65,12 @@ class Bai5 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
             val navController = rememberNavController()
 
+            var selectedMethod by remember { mutableStateOf<PaymentMethod?>(null) }
+
+            // Tạo 1 list gồm các PaymentMethod component là các item row chứa: Ảnh, tên phương thức, radiobutton tích chọn
             val paymentMethods = listOf(
                 PaymentMethod("PayPal", R.drawable.ic_paypal, Color(0xFFFFA726)),
                 PaymentMethod("Momo", R.drawable.ic_momo, Color(0xFFF48FB1)),
@@ -71,27 +78,83 @@ class Bai5 : ComponentActivity() {
                 PaymentMethod("Thanh toán trực tiếp", R.drawable.ic_zalopay, Color(0xFF80CBC4))
             )
 
-            var selectedMethod by remember { mutableStateOf<PaymentMethod?>(null) }
-
+//            thành phần xem như container bao bọc các component con bên trong, tự sắp xếp để chúng k bị đè lên nhau
             Scaffold(
+
+                // top bar chứa nút back, title và menu(CÓ thể sử dụng TopAppBar mặc định.Ở đây là tự custom)
                 topBar = {
                     TopToolbar()
-                }, bottomBar = {
+                },
+                // thành phần BottomNavigationBar
+                bottomBar = {
                     BottomNavigationBar(navController = navController)
                 }
+
             ) {
+//                NavigationBar(Bottom)
                 NavigationGraph(navController = navController)
+
+//                danh sách phương thức thanh toán
                 PaymentMethodList(
                     paymentMethods = paymentMethods,
                     selectedMethod = selectedMethod,
                     onMethodSelected = { selectedMethod = it }
                 )
+
             }
 
 
         }
     }
 
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun TopToolbar() {
+
+        TopAppBar(
+            title = { Text(text = "Thanh Toán") },
+
+            navigationIcon = {
+                IconButton(onClick = { /* Xử lý nút quay lại */ }) {
+                    Icon(painterResource(id = R.drawable.ic_back), contentDescription = "Back")
+                }
+            },
+
+            actions = {
+                IconButton(onClick = { /* Xử lý hành động khác */ }) {
+                    Icon(painterResource(id = R.drawable.menu), contentDescription = "Other Action")
+                }
+            },
+
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.White,
+                titleContentColor = Color.Black,
+                navigationIconContentColor = Color.Black,
+                actionIconContentColor = Color.Black
+            )
+
+        )
+
+    }
+
+    @Composable
+    fun AddressSection() {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = "Quyết | Xóm 7 Khu 15", style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = "51 Kim Hoàng An Trai Đường Ngã Tư Canh",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(text = "Vân Canh Hoài Đức", style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = "Nam Từ Liêm, Thành phố Hà Nội",
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+    }
+
+// Main content
 
     @Composable
     fun PaymentMethodList(
@@ -174,21 +237,9 @@ class Bai5 : ComponentActivity() {
     }
 
 
-    @Composable
-    fun AddressSection() {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Quyết | Xóm 7 Khu 15", style = MaterialTheme.typography.titleMedium)
-            Text(text = "51 Kim Hoàng An Trai Đường Ngã Tư Canh", style = MaterialTheme.typography.titleMedium)
-            Text(text = "Vân Canh Hoài Đức", style = MaterialTheme.typography.titleMedium)
-            Text(
-                text = "Nam Từ Liêm, Thành phố Hà Nội",
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-    }
-
-
     //    ----------------
+
+    //    các màn để chuyến hướng trong bottom nav bar
     @Composable
     fun HomeScreen() {
         Column(
@@ -232,8 +283,12 @@ class Bai5 : ComponentActivity() {
         }
     }
 
+
+    //     hàm tạo thành phần bottom nav bar. Trong đó kết hợp sử dụng NavigationBar và NavigationBarItem
     @Composable
     fun BottomNavigationBar(navController: NavHostController) {
+
+        // Tạo list dựa vào các object đã khai báo ở main
         val items = listOf(
             Screen.Home,
             Screen.History,
@@ -246,8 +301,10 @@ class Bai5 : ComponentActivity() {
         ) {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
+
             items.forEach { screen ->
                 NavigationBarItem(
+
                     icon = {
                         Icon(
                             painterResource(id = screen.icon),
@@ -282,37 +339,16 @@ class Bai5 : ComponentActivity() {
 
     @Composable
     fun NavigationGraph(navController: NavHostController) {
+
         NavHost(navController, startDestination = Screen.Home.route) {
+
             composable(Screen.Home.route) { HomeScreen() }
             composable(Screen.History.route) { HistoryScreen() }
             composable(Screen.Cart.route) { CartScreen() }
             composable(Screen.Profile.route) { ProfileScreen() }
+
         }
-    }
 
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun TopToolbar() {
-        TopAppBar(
-            title = { Text(text = "Thanh Toán") },
-            navigationIcon = {
-                IconButton(onClick = { /* Xử lý nút quay lại */ }) {
-                    Icon(painterResource(id = R.drawable.ic_back), contentDescription = "Back")
-                }
-            },
-            actions = {
-                IconButton(onClick = { /* Xử lý hành động khác */ }) {
-                    Icon(painterResource(id = R.drawable.menu), contentDescription = "Other Action")
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White,
-                titleContentColor = Color.Black,
-                navigationIconContentColor = Color.Black,
-                actionIconContentColor = Color.Black
-            )
-        )
     }
 
 
