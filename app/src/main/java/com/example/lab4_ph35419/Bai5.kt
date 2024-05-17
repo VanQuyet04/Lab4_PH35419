@@ -299,8 +299,11 @@ class Bai5 : ComponentActivity() {
         NavigationBar(
             containerColor = Color.White
         ) {
+            // trả về thông tin của màn hình hiện tại( đường dẫn ,trạng thái màn hình,Trạng thái vòng đời của màn hình,..)
             val navBackStackEntry by navController.currentBackStackEntryAsState()
+
             val currentRoute = navBackStackEntry?.destination?.route
+            // kiểm tra xem các mục trong điều hướng có trùng với đường dẫn màn hình đc lưu trong biến currentRoute hay ko
 
             items.forEach { screen ->
                 NavigationBarItem(
@@ -312,7 +315,7 @@ class Bai5 : ComponentActivity() {
                         )
                     },
                     label = { Text(screen.title) },
-                    selected = currentRoute == screen.route,
+                    selected = currentRoute == screen.route, // nếu danh mục được chọn, trả về currentRoute= link đường dẫn đến danh mục được chọn
                     onClick = {
                         navController.navigate(screen.route) {
                             // Điều hướng đến một màn hình duy nhất, không tạo thêm bản sao
@@ -340,8 +343,11 @@ class Bai5 : ComponentActivity() {
     @Composable
     fun NavigationGraph(navController: NavHostController) {
 
+//         nhận nhiệm vụ xử lí chính cho việc chuyển màn khi ấn vào icon của thanh điều hướng
+        // truyền và o 3 tham số : navController là công cụ thuộc thư việ có sẵn của jetpack compose giúp xử lí về bottom nav bar
         NavHost(navController, startDestination = Screen.Home.route) {
 
+            // tùy vào route object nào sẽ navigate đến fun component đó
             composable(Screen.Home.route) { HomeScreen() }
             composable(Screen.History.route) { HistoryScreen() }
             composable(Screen.Cart.route) { CartScreen() }
