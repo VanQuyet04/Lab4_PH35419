@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,7 +42,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -113,7 +117,11 @@ class Bai5 : ComponentActivity() {
     fun TopToolbar() {
 
         TopAppBar(
-            title = { Text(text = "Thanh Toán") },
+            title = { Text(text = "Thanh Toán",
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth()
+                ) },
 
             navigationIcon = {
                 IconButton(onClick = { /* Xử lý nút quay lại */ }) {
@@ -195,7 +203,8 @@ class Bai5 : ComponentActivity() {
                 onClick = { /* Handle next step */ },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp),
+                colors = ButtonDefaults.buttonColors(colorResource(id = R.color.orange))
             ) {
                 Text(text = "Tiếp theo")
             }
@@ -329,9 +338,9 @@ class Bai5 : ComponentActivity() {
                         }
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Red,
+                        selectedIconColor = colorResource(id = R.color.orange),
                         unselectedIconColor = Color.Gray,
-                        selectedTextColor = Color.Red,
+                        selectedTextColor = colorResource(id = R.color.orange),
                         unselectedTextColor = Color.Gray,
                         indicatorColor = Color.Transparent
                     )
