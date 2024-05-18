@@ -31,6 +31,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -38,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +55,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
 
 data class PaymentMethod(
     val name: String, val iconResId: Int, val color: Color
@@ -69,7 +73,8 @@ class Bai5 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-
+            val snackbarHostState = remember { SnackbarHostState() }
+            val coroutineScope = rememberCoroutineScope()
             val navController = rememberNavController()
 
             var selectedMethod by remember { mutableStateOf<PaymentMethod?>(null) }
@@ -92,6 +97,9 @@ class Bai5 : ComponentActivity() {
                 // thành phần BottomNavigationBar
                 bottomBar = {
                     BottomNavigationBar(navController = navController)
+                },
+                snackbarHost = {
+                    SnackbarHost(hostState = snackbarHostState)
                 }
 
             ) {
@@ -102,7 +110,12 @@ class Bai5 : ComponentActivity() {
                 PaymentMethodList(
                     paymentMethods = paymentMethods,
                     selectedMethod = selectedMethod,
-                    onMethodSelected = { selectedMethod = it }
+                    onMethodSelected = { method ->
+                        selectedMethod = method
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("Selected Payment Method: ${method.name}")
+                        }
+                    }
                 )
 
             }
@@ -148,6 +161,7 @@ class Bai5 : ComponentActivity() {
 
     @Composable
     fun AddressSection() {
+
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = "Quyết | Xóm 7 Khu 15", style = MaterialTheme.typography.titleMedium)
             Text(
@@ -200,7 +214,8 @@ class Bai5 : ComponentActivity() {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { /* Handle next step */ },
+                onClick = {
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
