@@ -1,4 +1,4 @@
-Link video demo lab4 
+Link video demo lab4 (Code in MainActivity)
 Hiển thị list vertical + horizontal - form login - list dạng todo +FloatActingButton
 https://youtu.be/Lk6FtGjaRyc
 
